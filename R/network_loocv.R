@@ -1,4 +1,4 @@
-network_loocv_new <- function(data_matrix,L,nf,p,corr,f_type,s,nc){
+network_loocv <- function(data_matrix,L,nf,p,corr,f_type,s,nc){
 
   names(data_matrix)[colnames(data_matrix)==L] <- paste("label")
   pred <- NULL
