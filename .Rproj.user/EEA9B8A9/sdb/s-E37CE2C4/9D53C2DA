@@ -1,0 +1,18 @@
+{
+    "contents" : "\nlibrary(FeatureV2)\nlibrary(MASS)\n\n## load data\nxx = 'CNS'\nfilename = sprintf(\"~/Data/Tan_data/%s.txt\",xx)\n\ndata_matrix <- read.table(filename, sep = ',', skip=1, header = F)\ndata_matrix <- data.frame(t(data_matrix))\ndata_label <- read.table(filename, sep = ',', nrows=1, header = F)\ndata_label <- as.factor(t(data_label))\ndata_matrix$label <- data_label\n\n## Result 1: network classifier\nL='label'\ncorr='plus'\nplot=F\nfs_method = 'ttest'\nnf = 1000\nnc = 1\np = 0.1\ns = 1\n\nacc1 = network_loocv(data_matrix,L,nf,p,corr,f_type,s,nc)\nprint(acc1)\n",
+    "created" : 1496086778791.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "2067916884",
+    "id" : "9D53C2DA",
+    "lastKnownWriteTime" : 4,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

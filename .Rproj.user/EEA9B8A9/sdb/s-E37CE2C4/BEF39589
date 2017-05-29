@@ -1,0 +1,17 @@
+{
+    "contents" : "# builds a network based on correlation (default=spearman)\n# return network and laplacian of the network\n\nnetwork_build <- function(data_train, p, corr) {\n\n  cor.method = \"spearman\"\n  network_corr <- cor(data_train,method = cor.method)\n\n\n  num_sample = nrow(data_train) - 2 # degrees of freedom\n\n  # T-test w/ H0: correlation == 0; H1: correlation != 0\n  network_corr_t <-\n    network_corr / (sqrt(abs(1 - (network_corr ^ 2)) / (num_sample))) # t-stat for T-test\n  network_corr_t_p <-\n    2 * (1 - pt(abs(network_corr_t), num_sample)) # p-value for T-test\n\n  # FDR adjustment for multiple hypothesis testing\n  network_p <-\n    matrix(\n      p.adjust(network_corr_t_p, 'fdr'), # adjusted p-values (as a vector)\n      nrow = nrow(network_corr_t_p),\n      ncol = ncol(network_corr_t_p)\n    ) # p-values as a matrix\n\n  # p-value filter\n  network <- network_p\n  if(p>0){\n    network[network_p<min(p,max(network_p))] = 0\n  }\n\n  # correlation value filter\n  if(corr=='plus'){\n    network[network < 0] <- 0\n  }\n\n  # graph laplacian\n  require('igraph', quietly = TRUE)\n  g <- graph.adjacency(network,mode = \"upper\",weighted = TRUE,diag = FALSE)\n  b <- as.matrix(laplacian_matrix(g))\n\n  return(list(network = network, laplacian = b))\n}\n\n",
+    "created" : 1496086542879.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "8205129",
+    "id" : "BEF39589",
+    "lastKnownWriteTime" : 1496086561,
+    "path" : "~/Documents/Rstudio/FeatureV2/R/network_build.R",
+    "project_path" : "R/network_build.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
