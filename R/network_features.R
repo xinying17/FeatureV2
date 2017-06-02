@@ -1,6 +1,7 @@
 network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,nc)
 {
   classes <- unique(data_train$label)
+  nc = min(nc,floor(nf/5))
 
   names(data_train)[colnames(data_train)==L] <- paste("label")
   names(data_test)[colnames(data_test)==L] <- paste("label")
