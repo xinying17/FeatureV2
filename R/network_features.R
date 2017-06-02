@@ -64,7 +64,7 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
         V <- r$vectors
         lam <- r$values
         lam[lam<0] = 0
-        Lmbd = diag(lam)
+        Lmbd = diag(lam ** abs(s))
         newL = V %*% Lmbd %*% solve(V)
         lap_fun <- function(x) {x %*% newL %*% x}
         new_train <- cbind(new_train,apply(as.matrix(data_trainm),1,lap_fun))
