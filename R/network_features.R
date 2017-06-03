@@ -129,6 +129,12 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
   new_test <- scale(new_test)
   new_test <- data.frame(t(new_test))
 
+  is.na(new_train) <- sapply(new_train, is.infinite)
+  is.na(new_train) <- sapply(new_train, is.nan)
+  ind_na <- colSums(is.na(new_train))==0
+  new_train <- new_train[,ind_na]
+  new_test <- new_test[,ind_na]
+
   return(list(new_train = new_train, new_test = new_test, train_label = train_label, test_label = test_label))
 
 }

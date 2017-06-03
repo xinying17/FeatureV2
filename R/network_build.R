@@ -24,7 +24,7 @@ network_build <- function(data_train, p, corr) {
     ) # p-values as a matrix
 
   # p-value filter
-  network <- network_p
+  network <- network_corr
   if(p>0){
     network[network_p<min(p,max(network_p))] = 0
   }
