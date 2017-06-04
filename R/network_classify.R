@@ -1,7 +1,7 @@
 # main function
 network_classify <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,nc){
 
-  nc=round(nc)
+  nc = round(max(1,min(nc,nf/5)))
   newdata <- network_features(L='label',data_train,data_test,nf,p,corr,f_type,s,nc)
 
   # test

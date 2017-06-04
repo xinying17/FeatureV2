@@ -1,7 +1,6 @@
 network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,nc)
 {
   classes <- unique(data_train$label)
-  nc = min(nc,floor(nf/5))
 
   names(data_train)[colnames(data_train)==L] <- paste("label")
   names(data_test)[colnames(data_test)==L] <- paste("label")
@@ -26,22 +25,26 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
   }
 
   # build network for each class
+  train_nets <- structure(list(types = character(),
+                               featureIDX = list(),
+                               nets = list()))
   if(f_type<3){
-    train_nets <- data.frame("I"=c(1:2))
-    rownames(train_nets) <- c("network","laplacian")
+    aa=1
     for(t in classes){
-      class_train <- data_trainm[train_label==t,]
-      nets <- network_build(class_train, p, corr)
-      train_nets$t <- nets
-      names(train_nets)[names(train_nets)=='t'] <- t
+      class_train_data <- data_trainm[train_label==t,]
+      nets <- network_build(class_train_data, p, corr)
+      train_nets$types[[aa]] <- t
+      train_nets$featureIDX[[aa]] <- colnames(data_train)
+      train_nets$nets[[aa]] <- nets
+      aa=aa+1
     }
 
     # new features
     new_train = NULL
     new_test = NULL
     if(f_type==1){ # new features with different power of laplacian matrix
-      for(t in classes){
-        nets <- train_nets[,t]
+      for(b in 1:length(train_nets$types)){
+        nets <- train_nets$nets[[b]]
 
         r <- eigen(nets$laplacian)
         V <- r$vectors
@@ -58,8 +61,8 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
     }
 
     if(f_type==2){ # single network intergration value
-      for(t in classes){
-        nets <- train_nets[,t]
+      for(b in 1:length(train_nets$types)){
+        nets <- train_nets$nets[[b]]
 
         r <- eigen(nets$laplacian)
         V <- r$vectors
@@ -76,9 +79,6 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
 
   if(f_type>2){ # subnetwork integration value
     # build network for each class
-    train_nets <- structure(list(types = character(),
-                                 featureIDX = list(),
-                                 nets = list()))
     aa = 1
     for(t in classes){
       class_train <- data_trainm[train_label==t,]
@@ -124,10 +124,10 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
   new_train <- new_train[,ind_na]
   new_test <- new_test[,ind_na]
 
-  new_train <- scale(new_train)
+  new_train <- t(scale(t(new_train)))
   new_train <- data.frame(new_train)
-  new_test <- scale(new_test)
-  new_test <- data.frame(t(new_test))
+  new_test <- t(scale(new_test))
+  new_test <- data.frame(new_test)
 
   is.na(new_train) <- sapply(new_train, is.infinite)
   is.na(new_train) <- sapply(new_train, is.nan)
