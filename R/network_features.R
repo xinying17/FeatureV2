@@ -86,7 +86,7 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
       clusterCut <- cutree(clusters, nc)
       for(i in 1:nc){
         x = data.frame(class_train[,clusterCut==i])
-        if(ncol(x)>1){
+        if(ncol(x)>2){
           nets <- network_build(as.matrix(x), p, corr)
           train_nets$types[[aa]] <- t
           train_nets$featureIDX[[aa]] <- colnames(x)
@@ -118,15 +118,9 @@ network_features <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
 
 
   # remove na and inf
-  is.na(new_train) <- sapply(new_train, is.infinite)
-  is.na(new_train) <- sapply(new_train, is.nan)
-  ind_na <- colSums(is.na(new_train))==0
-  new_train <- new_train[,ind_na]
-  new_test <- new_test[,ind_na]
-
   new_train <- t(scale(t(new_train)))
   new_train <- data.frame(new_train)
-  new_test <- t(scale(new_test))
+  new_test <- t(scale(t(new_test)))
   new_test <- data.frame(new_test)
 
   is.na(new_train) <- sapply(new_train, is.infinite)
