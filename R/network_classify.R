@@ -15,8 +15,20 @@ network_classify <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
   else{
     data_trainm <- data_train[,colnames(data_train)!=L]
     data_testm <- data_test[,colnames(data_test)!=L]
-    Data_train = cbind(data_trainm,10*newdata$new_train)
-    Data_test = cbind(data_testm,10*newdata$new_test)
+    # feature selection
+    if(nf>0) {
+      nf = 10*round(min(ncol(data_train),nf))
+
+      # rank feature by ttest
+      indx <- rankfeature(L,data_train,classes,nf)
+      train_label <- data_train[,colnames(data_train)==L]
+      data_trainm <- data_trainm[,indx]
+      test_label <- data_test[,colnames(data_test)==L]
+      data_testm <- data_testm[,indx]
+    }
+
+    Data_train = cbind(data_trainm,newdata$new_train)
+    Data_test = cbind(data_testm,newdata$new_test)
 
     wts <- nrow(newdata$new_train) / table(newdata$train_label)
     model1 <- svm(Data_train,newdata$train_label,type="C-classification",class.weights = wts)
@@ -26,4 +38,21 @@ network_classify <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
   return(list(pred = prediction, acc = sum(prediction==newdata$test_label)/nrow(data_test)))
 }
 
+rankfeature <- function(L,data_train,classes,nf){
+
+  ind <- data_train[,colnames(data_train)==L]==classes[1]
+  data_train <- data_train[ ,colnames(data_train)!=L] # remove labels
+  z <- NULL
+  for(i in 1:ncol(data_train)){
+    y = data_train[,i]
+    y1 = y[ind]
+    y2 = y[!ind]
+    result <- t.test(y1,y2)
+    z[[i]] <- result$statistic
+  }
+
+  indx <- c(1:ncol(data_train))
+  indx <- indx[order(-z)]
+  return(indx[1:nf])
+}
 
