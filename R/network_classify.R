@@ -17,7 +17,7 @@ network_classify <- function(L='label',data_train,data_test,nf,p,corr,f_type,s,n
     data_testm <- data_test[,colnames(data_test)!=L]
     # feature selection
     if(nf>0) {
-      nf = round(min(ncol(data_train),10*nf))
+      nf = round(min(ncol(data_train)-1,10*nf))
       # rank feature by ttest
       classes <- unique(data_train$label)
       indx <- rankfeature(L,data_train,classes,nf)
