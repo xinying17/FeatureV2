@@ -1,4 +1,4 @@
-network_loocv <- function(data_matrix,L,nf,p,corr,f_type,s,nc){
+network_loocv <- function(data_matrix,L,nf,p,corr,f_type,s,nc,kernel){
 
   names(data_matrix)[colnames(data_matrix)==L] <- paste("label")
   pred <- NULL
@@ -8,7 +8,7 @@ network_loocv <- function(data_matrix,L,nf,p,corr,f_type,s,nc){
     data_train <- data_matrix[-i,]  # training data
     data_test <- data_matrix[i,] # test data
 
-    result <- network_classify(L='label',data_train,data_test,nf,p,corr,f_type,s,nc)
+    result <- network_classify(L='label',data_train,data_test,nf,p,corr,f_type,s,nc,kernel)
     pred[[i]] <- result$pred
   }
   predx <- as.numeric(as.factor(pred))
